@@ -1,26 +1,34 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <template v-if="routes.name!=='404'">
+      <MHeader></MHeader>
+      <Tab></Tab>
+    </template>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import MHeader from 'components/MHeader/index.vue'
+import Tab from 'views/tab/tab'
+import { useRoute } from 'vue-router'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    MHeader,
+    Tab
+  },
+  setup () {
+    const routes = useRoute()
+    return {
+      routes
+    }
   }
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  background-color: $color-background;
 }
 </style>
