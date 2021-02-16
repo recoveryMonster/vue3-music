@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="music-app">
     <template v-if="routes.name!=='404'">
       <MHeader></MHeader>
       <Tab></Tab>

@@ -1,6 +1,7 @@
 import OriginalJSONP from 'jsonp'
 import { isPlainObject } from './util'
 
+// jaonp
 function jsonp (url, data, options) {
   url += (url.includes('?') ? '&' : '?') + serializeParams(data)
   return new Promise(function (resolve, reject) {
@@ -28,4 +29,7 @@ function serializeParams (data) {
   return query.slice(1)
 }
 
-export { jsonp }
+
+export {
+  jsonp
+}

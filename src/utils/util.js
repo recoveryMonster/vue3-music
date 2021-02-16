@@ -1,5 +1,5 @@
 const _toString = Object.prototype.toString
 
 export function isPlainObject (obj) {
-  return _toString(obj) === '[object Object]';
+  return _toString.call(obj) === '[object Object]';
 }
