@@ -1,18 +1,20 @@
-import { getRecommend } from '@/api/recommend';
+import { getRecommend, getDiscList } from '@/api/recommend';
 import { ERR_OK } from '@/api/config';
+import { types } from './mutation-types'
 
 
 const recommend = {
+  namespaced: true,
   state: {
     bannerList: [],
-    songList: [],
+    dicsList: [],
   },
   mutations: {
-    updateBannerList (state, list) {
+    [types.UPDATE_BANNER_LIST] (state, list) {
       state.bannerList = list;
     },
-    updateSongList (state, list) {
-      state.songList = list;
+    [types.UPDATE_DICS_LIST] (state, list) {
+      state.dicsList = list;
     }
   },
   actions: {
@@ -26,9 +28,16 @@ const recommend = {
             linkUrl: banner.id.includes('html') ? banner.id : `https://y.qq.com/n/yqq/album/${banner.subid}.html`
           }
         })
-        commit('updateBannerList', list)
+        commit(types.UPDATE_BANNER_LIST, list)
       }
     },
+    async getDiscList ({ commit }) {
+      const res = await getDiscList();
+      const { code, data = [] } = res || {};
+      if (code === ERR_OK) {
+        commit(types.UPDATE_DICS_LIST, data.list)
+      }
+    }
   }
 }
 

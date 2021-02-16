@@ -1,4 +1,26 @@
 module.exports = {
+  devServer: {
+    proxy: {
+      'api/getBannerList': {
+        target: 'https://u.y.qq.com/cgi-bin/musics.fcg',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/getBannerList': '', // rewrite path
+        },
+      },
+      '/api/getDiscList': {
+        target: 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/getDiscList': '', // rewrite path
+        },
+        headers: {
+          referer: 'https://c.y.qq.com/',
+          host: 'c.y.qq.com'
+        },
+      },
+    }
+  },
   css: {
     loaderOptions: {
       // 给 sass-loader 传递选项

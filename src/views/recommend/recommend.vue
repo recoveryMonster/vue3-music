@@ -41,7 +41,8 @@ export default {
   setup () {
     const store = useStore()
     const bannerList = computed(() => store.state.recommend.bannerList)
-    store.dispatch('getBannerList')
+    store.dispatch('recommend/getBannerList')
+    store.dispatch('recommend/getDiscList')
 
     return {
       bannerList,

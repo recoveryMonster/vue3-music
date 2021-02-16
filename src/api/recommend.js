@@ -7,7 +7,7 @@ import { jsonp } from '@/utils/jsonp';
  * 接口：https://u.y.qq.com/cgi-bin/musics.fcg
  */
 export function getRecommend () {
-  const url = '/cgi-bin/musics.fcg'
+  const url = '/api/getBannerList'
 
   const data = Object.assign({}, commonParams, {
     // "-": 'recom14387816465690695',
@@ -58,6 +58,27 @@ export function getRecommend () {
       }
     }
   })
+  return axiosFetch(url, data).then((res) => {
+    return Promise.resolve(res)
+  }).catch(err => {
+    return Promise.reject(err)
+  })
+}
+export function getDiscList () {
+  const url = '/api/getDiscList'
+
+  const data = Object.assign({}, commonParams, {
+    platform: 'yqq.json',
+    hostUin: 0,
+    sin: 0,
+    ein: 29,
+    sortId: 5,
+    needNewCode: 0,
+    categoryId: 10000000,
+    rnd: Math.random(),
+    format: 'json'
+  })
+
   return axiosFetch(url, data).then((res) => {
     return Promise.resolve(res)
   }).catch(err => {
