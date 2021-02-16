@@ -32,31 +32,19 @@
 
 <script>
 import Slider from 'components/Slider/Slider.vue'
-import { getRecommend } from '@/api/recommend';
-import { ERR_OK } from '@/api/config';
-import { ref } from 'vue'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 export default {
   components: {
     Slider
   },
   setup () {
-    let bannerList = ref([]);
+    const store = useStore()
+    const bannerList = computed(() => store.state.recommend.bannerList)
+    store.dispatch('getBannerList')
 
-    const getHomePageInfo = async () => {
-      const { focus: focusInfo = {} } = await getRecommend();
-      if (focusInfo?.code === ERR_OK) {
-        const rawBannerList = focusInfo?.data?.shelf?.v_niche?.[0]?.v_card;
-        bannerList.value = rawBannerList.map(banner => {
-          return {
-            ...banner,
-            linkUrl: `https://y.qq.com/n/yqq/album/${banner.subid}.html`
-          }
-        })
-      }
-    }
-    getHomePageInfo()
     return {
-      bannerList
+      bannerList,
     }
   }
 }

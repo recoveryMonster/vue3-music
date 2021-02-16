@@ -24,7 +24,7 @@
 
 <script>
 import BScroll from 'better-scroll'
-import { nextTick, onMounted, ref, reactive } from 'vue'
+import { nextTick, onMounted, ref, reactive, onUnmounted, onActivated, onDeactivated } from 'vue'
 import { addClass } from '@/utils/dom.js'
 export default {
   name: 'Slider',
@@ -39,7 +39,7 @@ export default {
     },
     interval: {
       type: Number,
-      default: 2000,
+      default: 4000,
     }
   },
   setup (props) {
@@ -120,13 +120,23 @@ export default {
 
       handleResize()
     })
+
+    onActivated(() => {
+      if (props.autoPlay) {
+        handlePlay()
+      }
+    })
+    onDeactivated(() => { clearTimeout(timer.value) })
+    onUnmounted(() => {
+      clearTimeout(timer.value)
+    })
     return {
       slider,
       sliderGroup,
       dots,
-      currentPageIndex
+      currentPageIndex,
     }
-  }
+  },
 }
 </script>
 
