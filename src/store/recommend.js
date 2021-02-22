@@ -28,14 +28,20 @@ const recommend = {
             linkUrl: banner.id.includes('html') ? banner.id : `https://y.qq.com/n/yqq/album/${banner.subid}.html`
           }
         })
-        commit(types.UPDATE_BANNER_LIST, list)
+        // commit(types.UPDATE_BANNER_LIST, list)
+        setTimeout(function () {
+          commit(types.UPDATE_BANNER_LIST, list)
+        }, 1000)
       }
     },
     async getDiscList ({ commit }) {
       const res = await getDiscList();
       const { code, data = [] } = res || {};
       if (code === ERR_OK) {
-        commit(types.UPDATE_DISC_LIST, data.list)
+        setTimeout(function () {
+          commit(types.UPDATE_DISC_LIST, data.list)
+        }, 1000)
+        // commit(types.UPDATE_DISC_LIST, data.list)
       }
     }
   }

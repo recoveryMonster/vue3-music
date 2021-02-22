@@ -1,11 +1,10 @@
 <template>
   <div class="recommend">
     <Scroll
-      ref="scroll"
+      ref="scrollCom"
       :data="discList"
       class="recommend-content"
     >
-
       <div>
         <div
           class="slider-wrapper"
@@ -19,6 +18,7 @@
               >
                 <a :href="item.linkUrl">
                   <img
+                    @load="handleImageLoad"
                     :src="item.cover"
                     :alt="item.title"
                   >
@@ -39,7 +39,7 @@
                 <img
                   width="60"
                   height="60"
-                  :src="disc.imgurl"
+                  v-lazy="disc.imgurl"
                 >
               </div>
               <div class="text">
@@ -55,30 +55,42 @@
             </li>
           </ul>
         </div>
+        <Loading
+          class="loading-container"
+          v-show="!discList.length"
+        ></Loading>
       </div>
     </Scroll>
   </div>
 </template>
 
 <script>
-import Slider from '@/components/Slider/Slider.vue'
+import Loading from 'components/Loading/Loading.vue'
+import Slider from 'components/Slider/Slider.vue'
 import Scroll from 'components/Scroll/Scroll.vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 export default {
   components: {
     Slider,
-    Scroll
+    Scroll,
+    Loading
   },
   setup () {
+    const scrollCom = ref(null)
     const store = useStore()
     const bannerList = computed(() => store.state.recommend.bannerList)
     const discList = computed(() => store.state.recommend.discList)
     store.dispatch('recommend/getBannerList')
     store.dispatch('recommend/getDiscList')
+    const handleImageLoad = () => {
+      scrollCom.value.refresh()
+    }
     return {
       bannerList,
-      discList
+      discList,
+      handleImageLoad,
+      scrollCom
     }
   }
 }
