@@ -24,7 +24,7 @@
 
 <script>
 import BScroll from 'better-scroll'
-import { nextTick, onMounted, ref, reactive, onUnmounted, onActivated, onDeactivated } from 'vue'
+import { onMounted, ref, reactive, onUnmounted, onActivated, onDeactivated } from 'vue'
 import { addClass } from '@/utils/dom.js'
 export default {
   name: 'Slider',
@@ -72,7 +72,7 @@ export default {
         scrollX: true,
         scrollY: false,
         momentum: false,
-        snap: {
+        slide: {
           loop: props.loop,
           threshold: 0.3,
           speed: 400
@@ -108,15 +108,13 @@ export default {
       })
     }
     onMounted(() => {
-      nextTick(() => {
-        setSliderWith();
-        initDots();
-        initSlider();
+      setSliderWith();
+      initDots();
+      initSlider();
 
-        if (props.autoPlay) {
-          handlePlay()
-        }
-      })
+      if (props.autoPlay) {
+        handlePlay()
+      }
 
       handleResize()
     })

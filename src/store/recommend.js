@@ -7,14 +7,14 @@ const recommend = {
   namespaced: true,
   state: {
     bannerList: [],
-    dicsList: [],
+    discList: [],
   },
   mutations: {
     [types.UPDATE_BANNER_LIST] (state, list) {
       state.bannerList = list;
     },
-    [types.UPDATE_DICS_LIST] (state, list) {
-      state.dicsList = list;
+    [types.UPDATE_DISC_LIST] (state, list) {
+      state.discList = list;
     }
   },
   actions: {
@@ -35,7 +35,7 @@ const recommend = {
       const res = await getDiscList();
       const { code, data = [] } = res || {};
       if (code === ERR_OK) {
-        commit(types.UPDATE_DICS_LIST, data.list)
+        commit(types.UPDATE_DISC_LIST, data.list)
       }
     }
   }

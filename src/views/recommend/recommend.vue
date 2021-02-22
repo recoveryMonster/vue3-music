@@ -1,51 +1,84 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div
-        class="slider-wrapper"
-        v-if="bannerList.length"
-      >
-        <div class="slider-content">
-          <Slider>
-            <div
-              v-for="item in bannerList"
-              :key="item.id"
+    <Scroll
+      ref="scroll"
+      :data="discList"
+      class="recommend-content"
+    >
+
+      <div>
+        <div
+          class="slider-wrapper"
+          v-if="bannerList.length"
+        >
+          <div class="slider-content">
+            <Slider>
+              <div
+                v-for="item in bannerList"
+                :key="item.id"
+              >
+                <a :href="item.linkUrl">
+                  <img
+                    :src="item.cover"
+                    :alt="item.title"
+                  >
+                </a>
+              </div>
+            </Slider>
+          </div>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li
+              v-for="disc in discList"
+              :key="disc.dissid"
+              class="item"
             >
-              <a :href="item.linkUrl">
+              <div class="icon">
                 <img
-                  :src="item.cover"
-                  :alt="item.title"
+                  width="60"
+                  height="60"
+                  :src="disc.imgurl"
                 >
-              </a>
-            </div>
-          </Slider>
+              </div>
+              <div class="text">
+                <h2
+                  class="name"
+                  v-html="disc.creator.name"
+                ></h2>
+                <p
+                  class="desc"
+                  v-html="disc.dissname"
+                ></p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
-      <div class="recommend-lis">
-        <h1 class="list-title">热门歌单推荐</h1>
-
-        <ul></ul>
-      </div>
-    </div>
+    </Scroll>
   </div>
 </template>
 
 <script>
-import Slider from 'components/Slider/Slider.vue'
+import Slider from '@/components/Slider/Slider.vue'
+import Scroll from 'components/Scroll/Scroll.vue'
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 export default {
   components: {
-    Slider
+    Slider,
+    Scroll
   },
   setup () {
     const store = useStore()
     const bannerList = computed(() => store.state.recommend.bannerList)
+    const discList = computed(() => store.state.recommend.discList)
     store.dispatch('recommend/getBannerList')
     store.dispatch('recommend/getDiscList')
-
     return {
       bannerList,
+      discList
     }
   }
 }
