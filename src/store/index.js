@@ -1,10 +1,12 @@
 import { createStore } from 'vuex'
 
-import { recommend } from './recommend'
+import { recommend } from './modules/recommend'
+import { singer } from './modules/singer'
 
 const store = createStore({
   modules: {
-    recommend
+    recommend,
+    singer,
   }
 })
 

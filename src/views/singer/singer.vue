@@ -5,11 +5,18 @@
 </template>
 
 <script>
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 export default {
   setup () {
+    const store = useStore()
+    store.dispatch('singer/getSingerList')
 
+    const singerList = computed(() => store.state.singer.singerList)
 
-    return {}
+    return {
+      singerList
+    }
   }
 }
 </script>
