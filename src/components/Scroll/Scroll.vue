@@ -35,7 +35,7 @@ export default {
         probeType: props.probeType,
         click: props.click,
         bounce: true,
-        mouseWheel: true
+        mouseWheel: true,
       })
     }
     const disable = () => {
@@ -46,6 +46,12 @@ export default {
     }
     const refresh = () => {
       scroll.value && scroll.value.refresh()
+    }
+    const scrollTo = () => {
+      scroll.value && scroll.value.scrollTo.apply(scroll.value, arguments)
+    }
+    const scrollToElement = function () {
+      scroll.value && scroll.value.scrollToElement.apply(scroll.value, arguments)
     }
 
     onMounted(() => {
@@ -62,7 +68,9 @@ export default {
       enable,
       refresh,
       scroll,
-      wrapper
+      wrapper,
+      scrollTo,
+      scrollToElement
     }
   }
 }

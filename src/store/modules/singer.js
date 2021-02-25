@@ -19,7 +19,6 @@ const singer = {
       const res = await getSingerList();
       if (res?.code === ERR_OK) {
         const list = normalizeSingerList(res.data?.list || [])
-        console.log(list)
         commit(types.UPDATE_SINGER_LIST, list);
       }
     },
