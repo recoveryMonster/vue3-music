@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import Scroll from 'components/Scroll/Scroll.vue'
 import Loading from 'components/Loading/Loading.vue'
 import { getData } from '@/utils/dom'
@@ -177,7 +177,9 @@ export default {
         listFixed.value.style.transform = `translate3d(0, ${offsetTop}px, 0)`;
       }
     })
-
+    watch(listView, () => {
+      nextTick(() => listView.value && listView.value.refresh())
+    })
     return {
       listenScroll,
       listView,

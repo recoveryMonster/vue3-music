@@ -104,7 +104,7 @@ export default {
           return
         }
         setSliderWith(true);
-        scrollSlider.refresh()
+        scrollSlider?.refresh()
       })
     }
     onMounted(() => {
