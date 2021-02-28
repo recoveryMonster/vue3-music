@@ -9,10 +9,10 @@
   >
     <ul>
       <li
-        v-for="group in data"
+        v-for="(group, idx) in data"
         :key="group.title.slice(0,1)"
         class="list-group"
-        :ref="setListGroup"
+        :ref="el => listGroup[idx] = el"
       >
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
@@ -33,7 +33,7 @@
     </ul>
     <div
       class="lsist-shortcut"
-      @touchstart="onShortcutTouchStart"
+      @touchstart.stop.prevent="onShortcutTouchStart"
       @touchmove.stop.prevent="onShortcutTouchMove"
     >
       <ul>
@@ -79,8 +79,6 @@ export default {
       return props.data.map(group => group?.title?.slice(0, 1))
     })
 
-    const setListGroup = el => listGroup.value.push(el)
-
     const listHeight = computed(() => {
       const heights = []
       let height = 0
@@ -108,6 +106,12 @@ export default {
       scrollToELement(anchorIndex)
     }
     const scrollToELement = (index) => {
+      if (!index && index !== 0) return;
+      if (index < 0) {
+        index = 0
+      } else if (index > listHeight.value.length - 2) {
+        index = listHeight.value.length - 2
+      }
       listView.value && listView.value.scrollToElement(listGroup.value[index], 0, false, false)
     }
 
@@ -131,7 +135,7 @@ export default {
         }
       }
       // 滚动到底部
-      currentIndex.value = listHeight.length - 2
+      currentIndex.value = listHeight.value.length - 2
     }
 
     watch(scrollY, (newVal) => {
@@ -142,12 +146,12 @@ export default {
       listenScroll,
       listView,
       shortcutList,
-      setListGroup,
       onShortcutTouchStart,
       onShortcutTouchMove,
       handleScroll,
       probeType,
       currentIndex,
+      listGroup,
     }
   }
 }
