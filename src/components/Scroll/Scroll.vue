@@ -22,8 +22,12 @@ export default {
       type: Array,
       default: null
     },
+    listenScroll: {
+      type: Boolean,
+      default: false
+    }
   },
-  setup (props) {
+  setup (props, { emit }) {
     const wrapper = ref(null);
     const scroll = ref(null);
 
@@ -37,6 +41,11 @@ export default {
         bounce: true,
         mouseWheel: true,
       })
+      if (props.listenScroll) {
+        scroll.value.on('scroll', pos => {
+          emit('scroll', pos.y)
+        })
+      }
     }
     const disable = () => {
       scroll.value && scroll.value.disable()

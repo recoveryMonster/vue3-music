@@ -1,6 +1,9 @@
 <template>
   <Scroll
     :data="data"
+    :listenScroll="listenScroll"
+    :probeType="probeType"
+    @scroll="handleScroll"
     class="list-view_wrapper"
     ref="listView"
   >
@@ -38,6 +41,7 @@
           v-for="(shortcut, index) in shortcutList"
           :key="shortcut"
           class='item'
+          :class="{'current': currentIndex === index}"
           :data-index="index"
         >
           {{shortcut}}
@@ -48,11 +52,12 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Scroll from 'components/Scroll/Scroll.vue'
 import { getData } from '@/utils/dom'
 const ANCHOR_HEIGHT = 18
 export default {
+  name: 'ListView',
   components: {
     Scroll
   },
@@ -63,14 +68,29 @@ export default {
     }
   },
   setup (props) {
-    const listView = ref(null)
-    const listGroup = []
+    const listenScroll = true
+    const probeType = 3
     const touch = {}
+    const listView = ref(null)
+    const listGroup = ref([])
+    const scrollY = ref(0)
+    const currentIndex = ref(0)
     const shortcutList = computed(() => {
       return props.data.map(group => group?.title?.slice(0, 1))
     })
 
-    const setListGroup = el => listGroup.push(el)
+    const setListGroup = el => listGroup.value.push(el)
+
+    const listHeight = computed(() => {
+      const heights = []
+      let height = 0
+      heights.push(height)
+      listGroup.value.forEach(list => {
+        height += list.offsetHeight
+        heights.push(height)
+      })
+      return heights
+    })
 
     const onShortcutTouchStart = (e) => {
       const anchorIndex = getData(e.target, 'index')
@@ -88,14 +108,46 @@ export default {
       scrollToELement(anchorIndex)
     }
     const scrollToELement = (index) => {
-      listView.value && listView.value.scrollToElement(listGroup[index], 0, false, false)
+      listView.value && listView.value.scrollToElement(listGroup.value[index], 0, false, false)
     }
+
+    const handleScroll = posY => {
+      scrollY.value = posY
+    }
+
+    const getCurrentIndex = (posY) => {
+      // 滚动到顶部
+      if (posY > 0) {
+        currentIndex.value = 0
+        return
+      }
+      // 在中间滚动，listheight的长度比列表长度多1
+      for (let i = 0; i < listHeight.value.length - 1; i++) {
+        const height1 = listHeight.value[i]
+        const height2 = listHeight.value[i + 1]
+        if (-posY >= height1 && -posY < height2) {
+          currentIndex.value = i
+          return
+        }
+      }
+      // 滚动到底部
+      currentIndex.value = listHeight.length - 2
+    }
+
+    watch(scrollY, (newVal) => {
+      getCurrentIndex(newVal)
+    })
+
     return {
+      listenScroll,
       listView,
       shortcutList,
       setListGroup,
       onShortcutTouchStart,
       onShortcutTouchMove,
+      handleScroll,
+      probeType,
+      currentIndex,
     }
   }
 }
@@ -151,6 +203,9 @@ export default {
       line-height: 1;
       color: $color-text-l;
       font-size: $font-size-small;
+      &.current {
+        color: $color-theme;
+      }
     }
   }
 }
