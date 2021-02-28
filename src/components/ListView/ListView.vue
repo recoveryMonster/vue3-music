@@ -48,18 +48,34 @@
         </li>
       </ul>
     </div>
+    <div
+      class="list-fixed"
+      ref="listFixed"
+      v-show="fixedTitle"
+    >
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
+    <div
+      class="loading-wrapper"
+      v-if="!data.length"
+    >
+      <Loading></Loading>
+    </div>
   </Scroll>
 </template>
 
 <script>
 import { computed, ref, watch } from 'vue'
 import Scroll from 'components/Scroll/Scroll.vue'
+import Loading from 'components/Loading/Loading.vue'
 import { getData } from '@/utils/dom'
 const ANCHOR_HEIGHT = 18
+const TITLE_HEIGHT = 30
 export default {
   name: 'ListView',
   components: {
-    Scroll
+    Scroll,
+    Loading
   },
   props: {
     data: {
@@ -68,13 +84,16 @@ export default {
     }
   },
   setup (props) {
+    let fixedTop = null;
     const listenScroll = true
     const probeType = 3
     const touch = {}
     const listView = ref(null)
+    const listFixed = ref(null)
     const listGroup = ref([])
     const scrollY = ref(0)
     const currentIndex = ref(0)
+    const diff = ref(0)
     const shortcutList = computed(() => {
       return props.data.map(group => group?.title?.slice(0, 1))
     })
@@ -88,6 +107,11 @@ export default {
         heights.push(height)
       })
       return heights
+    })
+
+    const fixedTitle = computed(() => {
+      if (scrollY.value > 0) return ''
+      return props.data[currentIndex.value]?.title || ''
     })
 
     const onShortcutTouchStart = (e) => {
@@ -130,6 +154,7 @@ export default {
         const height1 = listHeight.value[i]
         const height2 = listHeight.value[i + 1]
         if (-posY >= height1 && -posY < height2) {
+          diff.value = height2 + posY
           currentIndex.value = i
           return
         }
@@ -142,9 +167,21 @@ export default {
       getCurrentIndex(newVal)
     })
 
+    watch(diff, (newDiff) => {
+      let offsetTop = newDiff > 0 && newDiff < TITLE_HEIGHT ? newDiff - TITLE_HEIGHT : 0
+      if (fixedTop === offsetTop) {
+        return
+      }
+      fixedTop = offsetTop
+      if (listFixed.value) {
+        listFixed.value.style.transform = `translate3d(0, ${offsetTop}px, 0)`;
+      }
+    })
+
     return {
       listenScroll,
       listView,
+      listFixed,
       shortcutList,
       onShortcutTouchStart,
       onShortcutTouchMove,
@@ -152,6 +189,7 @@ export default {
       probeType,
       currentIndex,
       listGroup,
+      fixedTitle,
     }
   }
 }
@@ -211,6 +249,28 @@ export default {
         color: $color-theme;
       }
     }
+  }
+
+  .list-fixed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    .fixed-title {
+      height: 30px;
+      line-height: 30px;
+      padding-left: 20px;
+      font-size: $font-size-small;
+      color: $color-text-l;
+      background-color: $color-highlight-background;
+    }
+  }
+
+  .loading-wrapper {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 </style>
