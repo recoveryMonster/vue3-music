@@ -5,11 +5,29 @@
 </template>
 
 <script>
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { computed, onMounted } from 'vue'
 export default {
+  name: 'SingerDetail',
   setup () {
+    const store = useStore()
+    const router = useRouter()
 
-
-    return {}
+    const singerDetail = computed(() => store.state.singer.singerDetail)
+    const selectedSinger = computed(() => store.state.singer.selectedSinger)
+    onMounted(() => {
+      const singerId = selectedSinger.value?.id
+      if (!singerId) {
+        router.push('/singer')
+        return
+      }
+      store.dispatch('singer/getSingerDetail', singerId)
+    })
+    return {
+      selectedSinger,
+      singerDetail
+    }
   }
 }
 </script>

@@ -16,6 +16,7 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { types } from '@/store/mutation-types'
 import ListView from 'components/ListView/ListView.vue'
 export default {
   components: {
@@ -28,7 +29,10 @@ export default {
 
     const singerList = computed(() => store.state.singer.singerList)
 
-    const selectedSinger = (singer) => router.push({ path: `/singer/${singer.id}` })
+    const selectedSinger = (singer) => {
+      router.push(`/singer/${singer.id}`)
+      store.commit(`singer/${types.UPDATE_SELECTED_SINGER}`, singer)
+    }
 
     return {
       singerList,
