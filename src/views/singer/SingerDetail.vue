@@ -1,6 +1,6 @@
 <template>
   <div class="singer-detail_wrapper">
-
+    {{JSON.stringify(songList)}}
   </div>
 </template>
 
@@ -14,7 +14,7 @@ export default {
     const store = useStore()
     const router = useRouter()
 
-    const singerDetail = computed(() => store.state.singer.singerDetail)
+    const songList = computed(() => store.getters['singer/songList'])
     const selectedSinger = computed(() => store.state.singer.selectedSinger)
     onMounted(() => {
       const singerId = selectedSinger.value?.id
@@ -26,7 +26,7 @@ export default {
     })
     return {
       selectedSinger,
-      singerDetail
+      songList
     }
   }
 }
