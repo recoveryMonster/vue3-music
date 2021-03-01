@@ -20,6 +20,7 @@
             v-for="singer in group.list"
             :key="singer.id"
             class="list-group-item"
+            @click="selectedSinger(singer)"
           >
             <img
               class="avatar"
@@ -83,7 +84,7 @@ export default {
       default: () => ([])
     }
   },
-  setup (props) {
+  setup (props, { emit }) {
     let fixedTop = null;
     const listenScroll = true
     const probeType = 3
@@ -163,6 +164,10 @@ export default {
       currentIndex.value = listHeight.value.length - 2
     }
 
+    const selectedSinger = (singer) => {
+      emit('selectedSinger', singer)
+    }
+
     watch(scrollY, (newVal) => {
       getCurrentIndex(newVal)
     })
@@ -192,6 +197,7 @@ export default {
       currentIndex,
       listGroup,
       fixedTitle,
+      selectedSinger
     }
   }
 }

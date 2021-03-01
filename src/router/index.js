@@ -4,6 +4,7 @@ import Rank from 'views/rank/rank.vue'
 import Search from 'views/search/search.vue'
 import Singer from 'views/singer/singer.vue'
 import NotFound from 'components/NotFound/index.vue'
+import SingerDetail from 'views/singer/SingerDetail.vue'
 
 const routesInfo = [
   {
@@ -28,7 +29,14 @@ const routesInfo = [
   {
     path: '/singer',
     name: 'singer',
-    component: Singer
+    component: Singer,
+    children: [
+      {
+        path: ':id',
+        name: 'SingerDetail',
+        component: SingerDetail
+      }
+    ]
   },
   {
     path: '/404',
