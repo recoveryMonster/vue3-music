@@ -43,7 +43,7 @@ export default {
       })
       if (props.listenScroll) {
         scroll.value.on('scroll', pos => {
-          emit('scroll', pos.y)
+          emit('scroll', pos)
         })
       }
     }

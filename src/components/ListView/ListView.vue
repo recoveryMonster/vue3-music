@@ -140,8 +140,8 @@ export default {
       listView.value && listView.value.scrollToElement(listGroup.value[index], 0, false, false)
     }
 
-    const handleScroll = posY => {
-      scrollY.value = posY
+    const handleScroll = pos => {
+      scrollY.value = pos.y
     }
 
     const getCurrentIndex = (posY) => {
