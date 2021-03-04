@@ -7,15 +7,30 @@
     <div
       class="bg-image"
       :style="bgStyle"
+      ref="bgImageRef"
     >
-
     </div>
+    <Scroll
+      :data="songList"
+      ref="listScroll"
+      class="list"
+    >
+      <div class="song_wrapper">
+        <SongList :songList="songList"></SongList>
+      </div>
+    </Scroll>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref, onMounted, nextTick, watch } from 'vue'
+import Scroll from '../Scroll/Scroll.vue'
+import SongList from '../SongList/SongList.vue'
 export default {
+  components: {
+    Scroll,
+    SongList,
+  },
   props: {
     songList: {
       type: Array,
@@ -31,10 +46,22 @@ export default {
     }
   },
   setup (props) {
+    const bgImageRef = ref(null)
+    const listScroll = ref(null)
     const bgStyle = computed(() => `background-image: url(${props.bgImage})`)
 
+    watch(listScroll, () => nextTick(() => {
+      listScroll.value?.refresh()
+    }))
+    onMounted(() => {
+      const imgHeight = bgImageRef.value?.clientHeight;
+      listScroll.value && (listScroll.value.$el.style.top = `${imgHeight}px`)
+    })
+
     return {
-      bgStyle
+      bgStyle,
+      bgImageRef,
+      listScroll
     }
   }
 }
@@ -81,6 +108,17 @@ export default {
     padding-top: 70%;
     transform-origin: top;
     background-size: cover;
+  }
+  .list {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    background: $color-background;
+    overflow: hidden;
+    .song_wrapper {
+      padding: 20px 30px;
+    }
   }
 }
 </style>
