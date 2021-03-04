@@ -9,6 +9,10 @@
       :style="bgStyle"
       ref="bgImageRef"
     >
+      <div
+        class="filter"
+        ref="filterRef"
+      ></div>
     </div>
     <div
       class="bg-layer"
@@ -59,7 +63,9 @@ export default {
     const bgImageRef = ref(null)
     const listScroll = ref(null)
     const bgLayer = ref(null)
+    const filterRef = ref(null)
     const scrollY = ref(0)
+    const imageHeight = ref(0)
     let minTranslateY = 0
     const bgStyle = computed(() => `background-image: url(${props.bgImage})`)
 
@@ -68,9 +74,19 @@ export default {
     }
 
     watch(scrollY, (newVal) => {
-      let zIndex = 0
       const translateY = Math.max(minTranslateY, newVal)
+      const percent = Math.abs(newVal / imageHeight.value)
+      let zIndex = 0
+      let scale = 1
+      let blur = 0
+      if (newVal > 0) {
+        zIndex = 10
+        scale = 1 + percent
+      } else {
+        blur = Math.min(20, 20 * percent)
+      }
       bgLayer.value.style.transform = `translateY(${translateY}px)`
+      filterRef.value.style.backdrop = `blur(${blur}px)`
       const bgImageStyle = bgImageRef.value.style
       if (newVal < minTranslateY) {
         zIndex = 10
@@ -80,20 +96,22 @@ export default {
         bgImageStyle.paddingTop = '70%'
         bgImageStyle.height = 0
       }
+      bgImageStyle.transform = `scale(${scale})`
       bgImageStyle.zIndex = zIndex
     })
     watch(listScroll, () => nextTick(() => {
       listScroll.value?.refresh()
     }))
     onMounted(() => {
-      const imgHeight = bgImageRef.value?.clientHeight;
-      minTranslateY = -imgHeight + RESERVED_HEIGHT
-      listScroll.value && (listScroll.value.$el.style.top = `${imgHeight}px`)
+      imageHeight.value = bgImageRef.value?.clientHeight;
+      minTranslateY = -imageHeight.value + RESERVED_HEIGHT
+      listScroll.value && (listScroll.value.$el.style.top = `${imageHeight.value}px`)
     })
 
     return {
       bgStyle,
       bgImageRef,
+      filterRef,
       listScroll,
       bgLayer,
       probeType,
@@ -145,6 +163,14 @@ export default {
     padding-top: 70%;
     transform-origin: top;
     background-size: cover;
+    .filter {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(7, 17, 27, 0.4);
+    }
   }
   .list {
     position: fixed;
