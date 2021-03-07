@@ -2,9 +2,10 @@
   <div class="song-list_wrapper">
     <ul>
       <li
-        v-for="(song) in songList"
+        v-for="(song, index) in songList"
         :key="song.mid"
         class="item"
+        @click="selectSong(song, index)"
       >
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
@@ -23,11 +24,13 @@ export default {
       default: () => []
     }
   },
-  setup () {
+  setup (props, { emit }) {
     const getDesc = song => `${song.singer}·${song.album}`
 
+    const selectSong = (song, index) => { emit('selectSong', song, index) }
     return {
-      getDesc
+      getDesc,
+      selectSong
     }
   }
 }

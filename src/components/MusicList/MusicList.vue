@@ -40,7 +40,10 @@
       class="list"
     >
       <div class="song_wrapper">
-        <SongList :songList="songList"></SongList>
+        <SongList
+          @selectSong="hanldeSelectSong"
+          :songList="songList"
+        ></SongList>
       </div>
       <div
         class="loading_wrapper"
@@ -59,6 +62,7 @@ import SongList from '../SongList/SongList.vue'
 import Loading from '../Loading/Loading.vue'
 import { prefixStyle } from '@/utils/dom'
 import { routerBack } from '@/utils/util'
+import { useStore } from 'vuex'
 const transform = prefixStyle('transform');
 const backdrop = prefixStyle('backdrop-filter')
 const RESERVED_HEIGHT = 40
@@ -83,6 +87,7 @@ export default {
     }
   },
   setup (props) {
+    const store = useStore()
     const probeType = 3
     const listenScroll = true
     const bgImageRef = ref(null)
@@ -137,6 +142,9 @@ export default {
       listScroll.value && (listScroll.value.$el.style.top = `${imageHeight.value}px`)
     })
     const handleBack = routerBack()
+    const hanldeSelectSong = (song, index) => {
+      store.dispatch('song/selectPlay', { list: props.songList, index })
+    }
     return {
       bgStyle,
       bgImageRef,
@@ -147,7 +155,8 @@ export default {
       probeType,
       listenScroll,
       handleScroll,
-      handleBack
+      handleBack,
+      hanldeSelectSong
     }
   }
 }

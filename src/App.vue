@@ -9,18 +9,21 @@
         <component :is="Component" />
       </keep-alive>
     </router-view>
+    <Player></Player>
   </div>
 </template>
 
 <script>
 import MHeader from 'components/MHeader/index.vue'
 import Tab from 'views/tab/tab'
+import Player from 'views/player/player.vue'
 import { useRoute } from 'vue-router'
 export default {
   name: 'App',
   components: {
     MHeader,
-    Tab
+    Tab,
+    Player
   },
   setup () {
     const routes = useRoute()
