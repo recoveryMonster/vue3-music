@@ -2,6 +2,7 @@ import { getSingerList, getSingerDetail } from '@/api/singer';
 import { ERR_OK } from '@/api/config';
 import { types } from '../mutation-types'
 import { normalizeSingerList } from '@/utils/singer'
+import { isValidMusic } from '@/utils/song'
 import { createSong } from '@/utils/song'
 
 
@@ -17,7 +18,7 @@ const singer = {
       let list = []
       state.singerDetail.forEach(detail => {
         const { musicData } = detail
-        if (musicData.albummid && musicData.songid) {
+        if (isValidMusic(musicData)) {
           list.push(createSong(musicData))
         }
       })

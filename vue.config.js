@@ -19,6 +19,18 @@ module.exports = {
           host: 'c.y.qq.com'
         },
       },
+      '/api/getPurlUrl': {
+        target: 'https://u.y.qq.com/cgi-bin/musicu.fcg',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/getPurlUrl': '', // rewrite path
+        },
+        headers: {
+          referer: 'https://y.qq.com/',
+          origin: 'https://y.qq.com',
+          'Content-type': 'application/x-www-form-urlencoded'
+        }
+      },
     }
   },
   css: {

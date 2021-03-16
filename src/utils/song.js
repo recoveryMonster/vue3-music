@@ -1,3 +1,4 @@
+import { getSongsUrl } from '@/api/song'
 export class Song {
   constructor({ id, mid, singer, name, album, duration, image, url }) {
     this.id = id
@@ -38,4 +39,32 @@ function filterSinger (singer) {
     return ''
   }
   return singer.map(s => s.name).join('/')
+}
+
+
+export function isValidMusic (musicData) {
+  return musicData.albummid && musicData.songid && (!musicData.pay || musicData.pay.payalbumprice === 0)
+}
+
+/**
+ * @param {Object} songs
+ * */
+export const processSongsUrl = (songs) => {
+  if (!songs.length) {
+    return Promise.resolve(songs)
+  }
+  return getSongsUrl(songs).then((purlMap) => {
+    songs = songs.filter((song) => {
+      const purl = purlMap[song.mid]
+      if (purl) {
+        song.url = purl.indexOf('http') === -1 ? `http://dl.stream.qqmusic.qq.com/${purl}` : purl
+        return true
+      }
+      return false
+    })
+    return songs
+  }).catch(err => {
+    // eslint-disable-next-line no-console
+    console.log(err)
+  })
 }

@@ -136,6 +136,9 @@ export default {
     watch(listScroll, () => nextTick(() => {
       listScroll.value?.refresh()
     }))
+    watch(() => props.songList, () => nextTick(() => {
+      listScroll.value?.refresh()
+    }))
     onMounted(() => {
       imageHeight.value = bgImageRef.value?.clientHeight;
       minTranslateY = -imageHeight.value + RESERVED_HEIGHT

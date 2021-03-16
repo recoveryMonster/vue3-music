@@ -1,7 +1,7 @@
 <template>
   <div class="singer-detail_wrapper">
     <MusicList
-      :songList="songList"
+      :songList="canPlayList"
       :title="title"
       :bgImage="bgImage"
     ></MusicList>
@@ -9,10 +9,11 @@
 </template>
 
 <script>
+import { processSongsUrl } from '@/utils/song'
 import MusicList from 'components/MusicList/MusicList.vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 export default {
   name: 'SingerDetail',
   components: {
@@ -21,11 +22,18 @@ export default {
   setup () {
     const store = useStore()
     const router = useRouter()
+    let canPlayList = ref([])
 
     const songList = computed(() => store.getters['singer/songList'])
     const selectedSinger = computed(() => store.state.singer.selectedSinger)
     const title = computed(() => selectedSinger.value?.name)
     const bgImage = computed(() => selectedSinger.value?.avatar)
+
+    watch(songList, (newList) => {
+      processSongsUrl(newList)
+        .then(res => canPlayList.value = res)
+        .catch(err => console.log(err))
+    })
     onMounted(() => {
       const singerId = selectedSinger.value?.id
       if (!singerId) {
@@ -36,6 +44,7 @@ export default {
     })
     return {
       selectedSinger,
+      canPlayList,
       songList,
       title,
       bgImage

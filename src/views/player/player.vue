@@ -59,7 +59,10 @@
             <div class="icon i-left">
               <i class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
+            <div
+              class="icon i-center"
+              @click="handlePlay"
+            >
               <i class="icon-play"></i>
             </div>
             <div class="icon i-right">
@@ -101,20 +104,26 @@
         </div>
       </div>
     </transition>
+    <audio
+      ref="audioRef"
+      :src="currentSong.url"
+    ></audio>
   </div>
 </template>
 
 <script>
 import { useStore } from 'vuex'
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { types } from '@/store/mutation-types'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/utils/dom'
 const transform = prefixStyle('transform')
 export default {
+  name: 'player',
   setup () {
     const store = useStore()
     const cdWrapper = ref(null)
+    const audioRef = ref(null)
 
     const currentSong = computed(() => store.getters['song/currentSong'])
     const playList = computed(() => store.state.song.playList)
@@ -183,16 +192,25 @@ export default {
         scale
       }
     }
+    const handlePlay = () => {
+      audioRef.value && audioRef.value.play()
+    }
+
+    watch(currentSong, () => {
+      nextTick(() => audioRef.value && audioRef.value.play())
+    })
     return {
       playList,
       fullScreen,
       currentSong,
       cdWrapper,
+      audioRef,
       changeFullScreen,
       transitionEnter,
       transitionLeave,
       transitionAfterEnter,
-      transitionAfterLeave
+      transitionAfterLeave,
+      handlePlay
     }
   }
 }
@@ -413,6 +431,14 @@ export default {
         top: 0;
       }
     }
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>
