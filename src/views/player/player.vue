@@ -57,17 +57,30 @@
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div
+              class="icon i-left"
+              :class="disableCls"
+            >
+              <i
+                @click="togglePrevOrNext('prev')"
+                class="icon-prev"
+              ></i>
             </div>
             <div
               class="icon i-center"
               @click="handleTogglePlay"
+              :class="disableCls"
             >
               <i :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div
+              class="icon i-right"
+              :class="disableCls"
+            >
+              <i
+                @click="togglePrevOrNext('next')"
+                class="icon-next"
+              ></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -116,6 +129,8 @@
     <audio
       ref="audioRef"
       :src="currentSong.url"
+      @play="handleAudioPlay"
+      @error="handleAudioError"
     ></audio>
   </div>
 </template>
@@ -130,19 +145,58 @@ const transform = prefixStyle('transform')
 export default {
   name: 'player',
   setup () {
+    const songReady = ref(false)
     const store = useStore()
     const cdWrapper = ref(null)
     const audioRef = ref(null)
 
+    const currentIndex = computed(() => store.state.song.currentIndex)
     const currentSong = computed(() => store.getters['song/currentSong'])
     const playList = computed(() => store.state.song.playList)
     const fullScreen = computed(() => store.state.song.fullScreen)
     const playingState = computed(() => store.state.song.playing)
     const playIcon = computed(() => !playingState.value ? 'icon-play' : 'icon-pause')
     const cdCls = computed(() => playingState.value ? 'play' : 'play pause')
+    const disableCls = computed(() => songReady.value ? '' : 'disable')
 
     const changeFullScreen = (isFull) => store.commit(`song/${types.UPDATE_FULL_SCREEN}`, isFull)
     const changePlayingState = () => store.commit(`song/${types.UPDATE_PLAYING_STATE}`, !playingState.value)
+    const changeCurrentIndex = (index) => store.commit(`song/${types.UPDATE_CURRENT_INDEX}`, index)
+
+    const togglePrevOrNext = (action = 'next') => {
+      const songLength = playList.value.length
+      if (!songReady.value) {
+        return
+      }
+      let index = action === 'prev' ? currentIndex.value - 1 : currentIndex.value + 1
+      if (index === -1 && action === 'prev') {
+        index = songLength - 1
+      } else if (index === songLength && action === 'next') {
+        index = 0
+      }
+      changeCurrentIndex(index)
+      if (!playingState.value) {
+        handleTogglePlay()
+      }
+      songReady.value = false
+    }
+
+    const handleTogglePlay = () => {
+      if (!songReady.value) {
+        return
+      }
+      changePlayingState()
+      const audio = audioRef.value
+      nextTick(() => {
+        playingState.value ? audio.play() : audio.pause()
+        songReady.value = true
+      })
+    }
+
+    const handleAudioError = () => songReady.value = true
+
+    const handleAudioPlay = () => songReady.value = true
+
     const transitionEnter = (el, done) => {
       const { x, y, scale } = getPosAndScale()
       const animation = {
@@ -205,24 +259,24 @@ export default {
         scale
       }
     }
-    const handleTogglePlay = () => {
-      changePlayingState()
-      nextTick(() => {
-        const audio = audioRef.value
-        playingState.value ? audio.play() : audio.pause()
-      })
-    }
+
 
     watch(currentSong, () => {
       nextTick(() => audioRef.value && audioRef.value.play())
     })
     return {
+      disableCls,
+      handleAudioPlay,
+      handleAudioError,
+      togglePrevOrNext,
+      currentIndex,
       playList,
       fullScreen,
       currentSong,
       cdWrapper,
       audioRef,
       changeFullScreen,
+      changeCurrentIndex,
       transitionEnter,
       transitionLeave,
       transitionAfterEnter,
